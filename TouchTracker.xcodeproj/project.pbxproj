@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F65E11FA2273AA4000D55A27 /* Circle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65E11F92273AA4000D55A27 /* Circle.swift */; };
 		F6E212E7225E52420009543A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E212E6225E52420009543A /* AppDelegate.swift */; };
 		F6E212E9225E52420009543A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E212E8225E52420009543A /* ViewController.swift */; };
 		F6E212EC225E52420009543A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F6E212EA225E52420009543A /* Main.storyboard */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F65E11F92273AA4000D55A27 /* Circle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Circle.swift; sourceTree = "<group>"; };
 		F6E212E3225E52420009543A /* TouchTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TouchTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6E212E6225E52420009543A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F6E212E8225E52420009543A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -62,6 +64,7 @@
 				F6E212E8225E52420009543A /* ViewController.swift */,
 				F6E212F8225E529B0009543A /* Line.swift */,
 				F6E212FA225E533F0009543A /* DrawView.swift */,
+				F65E11F92273AA4000D55A27 /* Circle.swift */,
 				F6E212EA225E52420009543A /* Main.storyboard */,
 				F6E212ED225E52420009543A /* Assets.xcassets */,
 				F6E212EF225E52420009543A /* LaunchScreen.storyboard */,
@@ -142,6 +145,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F65E11FA2273AA4000D55A27 /* Circle.swift in Sources */,
 				F6E212F9225E529B0009543A /* Line.swift in Sources */,
 				F6E212E9225E52420009543A /* ViewController.swift in Sources */,
 				F6E212FB225E533F0009543A /* DrawView.swift in Sources */,

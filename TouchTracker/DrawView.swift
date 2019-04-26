@@ -8,9 +8,12 @@
 
 import UIKit
 
+
 class DrawView: UIView, UIGestureRecognizerDelegate {
     var currentLines = [NSValue:Line]()
     var finishedLines = [Line]()
+    var currentCircle = Circle()
+    var finishedCircles = [Circle]()
     var selectedLineIndex: Int? {
         didSet {
             if selectedLineIndex == nil {
@@ -20,6 +23,9 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
         }
     }
     var moveRecognizer: UIPanGestureRecognizer!
+    var longPressRecognizer: UILongPressGestureRecognizer!
+    
+
     
     override var canBecomeFirstResponder: Bool {
         return true
@@ -38,7 +44,8 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
         tapRecognizer.require(toFail: doubleTapRecognizer)
         addGestureRecognizer(tapRecognizer)
         
-        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(DrawView.longPress(_:)))
+        //let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(DrawView.longPress(_:)))
+        longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(DrawView.longPress(_:)))
         addGestureRecognizer(longPressRecognizer)
         
         moveRecognizer = UIPanGestureRecognizer(target: self, action: #selector(DrawView.moveLine(_:)))
@@ -54,6 +61,10 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
     
     func moveLine(_ gestureRecognizer: UIPanGestureRecognizer) {
         print("Recognized a pan")
+        
+        guard longPressRecognizer.state == .changed || longPressRecognizer.state == .ended else {
+            return
+        }
         
         // If a line is selected...
         if let index = selectedLineIndex {
@@ -158,6 +169,8 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
         }
     }
     
+    
+    
     func stroke(_ line: Line) {
         let path = UIBezierPath()
         path.lineWidth = lineThickness
@@ -192,13 +205,25 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
         //UIColor.black.setStroke()
         finishedLineColor.setStroke()
         for line in finishedLines {
+            line.color.setStroke()
             stroke(line)
         }
         
         currentLineColor.setStroke()
         for (_, line) in currentLines {
+            line.color.setStroke()
             stroke(line)
         }
+        
+        // Draw Circles
+        finishedLineColor.setStroke()
+        for circle in finishedCircles {
+            let path = UIBezierPath(ovalIn: circle.rect)
+            path.lineWidth = lineThickness
+            path.stroke()
+        }
+        currentLineColor.setStroke()
+        UIBezierPath(ovalIn: currentCircle.rect).stroke()
         
         if let index = selectedLineIndex {
             UIColor.green.setStroke()
@@ -207,56 +232,79 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
         }
     }
     
+    
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        //log statement to see the order of events
+        // Log statement to see the order of events
         print(#function)
         
-        for touch in touches {
-            let location = touch.location(in: self)
-            
-            let newLine = Line(begin: location, end: location)
-            
-            let key = NSValue(nonretainedObject: touch)
-            currentLines[key] = newLine
+        if touches.count == 2 {
+            let touchesArray = Array(touches)
+            let location1 = touchesArray[0].location(in: self)
+            let location2 = touchesArray[1].location(in: self)
+            currentCircle = Circle(point1: location1, point2: location2)
+        } else {
+            for touch in touches {
+                let location = touch.location(in: self)
+                
+                let newline = Line(begin: location, end: location)
+                
+                let key = NSValue(nonretainedObject: touch)
+                currentLines[key] = newline
+            }
         }
-        
         setNeedsDisplay()
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        //log statement to see the order of events
+        // Log statement to see the order of events
         print(#function)
         
-        for touch in touches {
-            let key = NSValue(nonretainedObject: touch)
-            currentLines[key]?.end = touch.location(in: self)
+        if touches.count == 2 {
+            let touchesArray = Array(touches)
+            let location1 = touchesArray[0].location(in: self)
+            let location2 = touchesArray[1].location(in: self)
+            currentCircle = Circle(point1: location1, point2: location2)
+        } else {
+            for touch in touches {
+                let key = NSValue(nonretainedObject: touch)
+                currentLines[key]?.end = touch.location(in: self)
+            }
         }
-        
         setNeedsDisplay()
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        //log statement to see the order of events
+        // Log statement to see the order of events
         print(#function)
         
-        for touch in touches {
-            let key = NSValue(nonretainedObject: touch)
-            if var line = currentLines[key] {
-                line.end = touch.location(in: self)
-                
-                finishedLines.append(line)
-                currentLines.removeValue(forKey: key)
+        if touches.count == 2 {
+            let touchesArray = Array(touches)
+            let location1 = touchesArray[0].location(in: self)
+            let location2 = touchesArray[1].location(in: self)
+            currentCircle = Circle(point1: location1, point2: location2)
+            finishedCircles.append(currentCircle)
+            currentCircle = Circle()
+        } else {
+            for touch in touches {
+                let key = NSValue(nonretainedObject: touch)
+                if var line = currentLines[key] {
+                    line.end = touch.location(in: self)
+                    
+                    finishedLines.append(line)
+                    currentLines.removeValue(forKey: key)
+                }
             }
         }
-        
         setNeedsDisplay()
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        //log statement to see the order of events
+        // Log statement to see the order of events
         print(#function)
         
         currentLines.removeAll()
+        currentCircle = Circle()
         
         setNeedsDisplay()
     }
